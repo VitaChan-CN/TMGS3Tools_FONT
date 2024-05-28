@@ -1,0 +1,33 @@
+name: .NET Publish
+
+on:
+   push: {tags:  ['v*'] }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Publish
+      run: cd TMGS3FONT && dotnet publish -p:PublishProfile=FolderProfile
+    - name: Publish1
+      run: cd TMGS3FONT && dotnet publish -p:PublishProfile=FolderProfile1
+    - name: Publish2
+      run: cd TMGS3FONT && dotnet publish -p:PublishProfile=FolderProfile2
+    - name: 7zip release
+      run : 7z a -t7z -mx=9 TMGS3FONT_linux-x64_release.7z ./TMGS3FONT/publish/linux-x64
+    - name: 7zip release
+      run : 7z a -t7z -mx=9 TMGS3FONT_osx-x64_release.7z ./TMGS3FONT/publish/osx-x64
+    - name: 7zip release
+      run : 7z a -t7z -mx=9 TMGS3FONT_win-x64_release.7z ./TMGS3FONT/publish/win-x64
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: "TMGS3FONT_linux-x64_release.7z,TMGS3FONT_osx-x64_release.7z,TMGS3FONT_win-x64_release.7z"
+        bodyFile: ""
+        token: ${{ secrets.GITHUB_TOKEN }}
+      
